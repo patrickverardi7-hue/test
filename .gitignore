@@ -1,0 +1,11 @@
+node_modules
+out
+.DS_Store
+# I video sorgente possono essere pesanti: tienili fuori da git
+public/*.mp4
+public/*.mov
+public/*.webm
+public/*.mkv
+public/*.mp3
+public/*.wav
+public/*.m4a

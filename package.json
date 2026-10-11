@@ -1,0 +1,30 @@
+{
+  "name": "video-editor-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Editor video programmabile basato su Remotion",
+  "scripts": {
+    "dev": "remotion studio",
+    "studio": "remotion studio",
+    "render": "remotion render VideoEditor out/video.mp4",
+    "render:props": "remotion render VideoEditor out/video.mp4 --props=./edit.json",
+    "still": "remotion still VideoEditor out/thumbnail.png --frame=30",
+    "typecheck": "tsc --noEmit",
+    "upgrade": "remotion upgrade"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@remotion/cli": "4.0.534",
+    "@remotion/media-parser": "4.0.534",
+    "@remotion/transitions": "4.0.534",
+    "@remotion/zod-types": "4.0.534",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.534",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "typescript": "7.0.2"
+  }
+}

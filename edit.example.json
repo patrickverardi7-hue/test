@@ -1,0 +1,19 @@
+{
+  "fps": 30,
+  "width": 1280,
+  "height": 720,
+  "clips": [
+    { "src": "clip1.mp4", "startFrom": 1, "endAt": 5 },
+    { "src": "clip2.mp4", "startFrom": 0, "endAt": null, "playbackRate": 1.5 }
+  ],
+  "transition": { "type": "slide", "durationInSeconds": 0.5 },
+  "title": { "text": "Vacanze 2026", "subtitle": "Sardegna", "durationInSeconds": 2 },
+  "outro": { "text": "Fine", "durationInSeconds": 1.5 },
+  "captions": [
+    { "text": "Si parte!", "start": 0.3, "end": 2.5 },
+    { "text": "Al mare", "start": 4, "end": 6 }
+  ],
+  "captionStyle": { "fontSize": 40 },
+  "music": { "src": "music.mp3", "volume": 0.2 },
+  "watermark": "@iltuocanale"
+}
