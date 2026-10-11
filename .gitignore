@@ -9,3 +9,6 @@ public/*.mkv
 public/*.mp3
 public/*.wav
 public/*.m4a
+
+# Il font incluso va versionato
+!public/fonts/

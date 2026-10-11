@@ -1,0 +1,47 @@
+{
+  "src": "sequenza04.mp4",
+  "trimStart": 0,
+  "trimEnd": null,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "focusX": 48,
+  "focusY": 35,
+  "transcript": [
+    { "start": 0.0, "end": 2.6, "text": "Io non so come sia possibile" },
+    { "start": 2.6, "end": 6.94, "text": "questa cosa ma qualcuno è riuscito a far girare i giochi della nostra" },
+    { "start": 6.94, "end": 9.82, "text": "infanzia su browser. Non so secondo quale" },
+    { "start": 9.82, "end": 13.7, "text": "principio è possibile questa cosa, ma sono stati ottimizzati dei giochi" },
+    { "start": 13.7, "end": 16.58, "text": "a tal punto da farli girare sul nostro browser." },
+    { "start": 16.58, "end": 21.5, "text": "Giochi particolarmente vecchi come Black Ops 1 Zombie o GTA Vice City." },
+    { "start": 21.5, "end": 24.34, "text": "Ma questo ragazzi dà uno slancio" },
+    { "start": 24.34, "end": 27.88, "text": "ai giochi del futuro, dove praticamente potremmo giocarli" },
+    { "start": 27.88, "end": 32.54, "text": "tranquillamente su browser. Negli ultimi giorni il mondo dei videogiochi sta avendo una rivoluzione molto" },
+    { "start": 32.54, "end": 35.52, "text": "particolare, c'è anche tipo qualcuno che è riuscito a" },
+    { "start": 35.52, "end": 38.76, "text": "legare dei giochi tipo GTA V e Minecraft" },
+    { "start": 38.76, "end": 42.8, "text": "o Minecraft ed Elden Ring tramite delle mod. Se volete che porti" },
+    { "start": 42.8, "end": 46.08, "text": "anche quel video lasciate subito un bel mi piace a questo video e" },
+    { "start": 46.08, "end": 49.74, "text": "iscrivetevi al mio canale che stiamo cercando di raggiungere i 100.000 iscritti." },
+    { "start": 49.74, "end": 54.4, "text": "Io non mi perderei troppo in chiacchiere, andiamo subito a vedere e a provare questi giochi su browser." }
+  ],
+  "caption": {
+    "fontSize": 80,
+    "positionY": 80,
+    "wordsPerPage": 3,
+    "highlightWords": [
+      "browser", "infanzia", "futuro", "GTA", "Vice", "City", "Zombie", "Black", "Ops",
+      "Minecraft", "Elden", "Ring", "mod", "rivoluzione", "piace", "iscrivetevi", "100.000", "iscritti", "videogiochi"
+    ]
+  },
+  "zooms": [
+    { "start": 6.94, "end": 9.82, "scale": 1.15 },
+    { "start": 16.58, "end": 21.5, "scale": 1.12 },
+    { "start": 24.34, "end": 27.88, "scale": 1.2 },
+    { "start": 35.52, "end": 38.76, "scale": 1.12 },
+    { "start": 49.74, "end": 54.4, "scale": 1.15 }
+  ],
+  "callouts": [
+    { "type": "like", "start": 43.6, "end": 46.6, "text": "" },
+    { "type": "subscribe", "start": 46.4, "end": 50.6, "text": "Obiettivo: 100.000 iscritti" }
+  ]
+}

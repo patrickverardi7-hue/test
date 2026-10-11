@@ -50,6 +50,28 @@ Nel JSON basta indicare i campi da cambiare: gli altri prendono il valore di def
 
 La durata totale si calcola da sola: se `endAt` è `null`, Remotion legge la durata reale del file.
 
+## Video parlati: sottotitoli animati (composizione `TalkingHead`)
+
+Per video in cui parli in camera: sottotitoli parola per parola in stile TikTok/YouTube (la parola detta si illumina, le parole chiave sono colorate), zoom "punch-in" sui momenti importanti e pop-up animati "Mi piace" / "Iscriviti".
+
+```bash
+npx remotion render TalkingHead out/video.mp4 --props=./edits/sequenza04.json
+```
+
+`edits/sequenza04.json` è un esempio completo. I campi principali:
+
+| Campo | Descrizione |
+| --- | --- |
+| `src`, `trimStart`, `trimEnd` | Video in `public/` e taglio in secondi (`trimEnd: null` = fino alla fine) |
+| `transcript[]` | `{ start, end, text }`: blocchi di 3–5 secondi, il tempo viene diviso tra le parole |
+| `caption` | `fontSize`, `positionY` (% dall'alto), `wordsPerPage`, colori, `highlightWords` |
+| `zooms[]` | `{ start, end, scale }`: zoom verso il punto `focusX`/`focusY` |
+| `callouts[]` | `{ type: "like" \| "subscribe", start, end, text }` |
+| `focusX`, `focusY` | Punto da tenere al centro (utile per il formato verticale) |
+| `colorFilter` | Filtro CSS per la correzione colore |
+
+Per il formato verticale aggiungi `"width": 1080, "height": 1920` e riduci `wordsPerPage` a 2.
+
 ## Struttura
 
 ```
@@ -60,6 +82,9 @@ src/
   calculate-metadata.ts  calcolo di durata e risoluzione
   VideoEditor.tsx        timeline con TransitionSeries
   components/            TitleCard, ClipPlayer, Captions, Watermark, BackgroundMusic
+  talking-head/          sottotitoli animati, zoom e pop-up per video parlati
+edits/                   file di montaggio (--props) per i singoli video
+public/fonts/            font Montserrat incluso (funziona offline)
 ```
 
 ## Altri comandi
