@@ -15,11 +15,10 @@ the words out loud. A line you would never say is not a draft, it is a retake.
 
 ## Who I am
 
-- **Name:**
-- **Handle:**
-- **What I do, in one sentence:**
-- **Who I am talking to:** (be specific: "photographers charging under $2,000",
-  not "creatives")
+- **Name:** Asma
+- **Handle:** @asmagaming22
+- **What I do, in one sentence:** Contenuti gaming su Minecraft: build, sfide, momenti divertenti e consigli di gioco.
+- **Who I am talking to:** ragazzi e ragazze che giocano a Minecraft
 - **What I sell:**
 
 ## What I sound like
