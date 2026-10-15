@@ -1,0 +1,32 @@
+name: Discord messaggio giornaliero
+
+on:
+  schedule:
+    # 07:00 Europe/Rome: 05:00 UTC con l'ora legale, 06:00 UTC con l'ora solare.
+    # Lo script invia solo dal run corretto.
+    - cron: "0 5 * * *"
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Mostra il messaggio senza inviarlo"
+        type: boolean
+        default: true
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Invia messaggio
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_USERNAME: ${{ vars.DISCORD_USERNAME }}
+          DISCORD_AVATAR_URL: ${{ vars.DISCORD_AVATAR_URL }}
+          SCHEDULE: ${{ github.event.schedule }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python discord-daily/send_daily.py
