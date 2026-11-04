@@ -96,3 +96,15 @@ npm run upgrade    # aggiorna tutti i pacchetti Remotion
 ```
 
 > Nota sulla licenza: Remotion è gratuito per privati e aziende fino a 3 persone; oltre serve una licenza aziendale. Dettagli su https://www.remotion.dev/license
+
+## Higgsfield API (Seedance 2.5)
+
+Esempio di generazione text-to-video con l'SDK ufficiale `@higgsfield/client`:
+
+1. Copia `.env.example` in `.env.local` e imposta `HF_CREDENTIALS=key-id:key-secret` (il file è ignorato da git).
+   In alternativa imposta `HF_CREDENTIALS` come variabile d'ambiente.
+2. Esegui `npm run seedance` (richiede Node ≥ 22.18; ogni esecuzione è una generazione a pagamento).
+
+Lo script (`scripts/seedance/index.ts`) usa `higgsfield.subscribe` con il modello
+`bytedance/seedance-2.5/text-to-video`, attende il risultato e stampa l'URL del video.
+Se la richiesta finisce come `failed`, `nsfw` (moderata) o annullata, esce con codice 1 senza URL.

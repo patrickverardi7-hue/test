@@ -12,3 +12,8 @@ public/*.m4a
 
 # Il font incluso va versionato
 !public/fonts/
+
+# Credenziali locali (Higgsfield API): mai in git
+.env
+.env.local
+.env.*.local

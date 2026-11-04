@@ -10,10 +10,12 @@
     "render:props": "remotion render VideoEditor out/video.mp4 --props=./edit.json",
     "still": "remotion still VideoEditor out/thumbnail.png --frame=30",
     "typecheck": "tsc --noEmit",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "seedance": "node scripts/seedance/index.ts"
   },
   "license": "UNLICENSED",
   "dependencies": {
+    "@higgsfield/client": "^0.2.6",
     "@remotion/cli": "4.0.534",
     "@remotion/fonts": "4.0.534",
     "@remotion/media-parser": "4.0.534",
