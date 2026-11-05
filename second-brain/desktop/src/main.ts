@@ -26,11 +26,14 @@ const SHORTCUT = 'CommandOrControl+Shift+Space';
 const isDev = !app.isPackaged;
 const unpacked = (p: string) => p.replace(`app.asar${path.sep}`, `app.asar.unpacked${path.sep}`);
 const SERVER_PATH = unpacked(path.join(__dirname, 'server.mjs'));
-const MCP_PATH = unpacked(path.join(__dirname, 'second-brain-mcp.mjs'));
+const BUNDLED_MCP = unpacked(path.join(__dirname, 'second-brain-mcp.mjs'));
 const CLIENT_DIST = isDev ? path.resolve(__dirname, '../../client/dist') : path.join(process.resourcesPath, 'client');
 const ASSETS = path.join(__dirname, '../assets');
 const LOG_FILE = path.join(DATA_DIR, 'desktop.log');
 const SETTINGS_FILE = path.join(DATA_DIR, 'desktop-settings.json');
+// Installata: copia il server MCP nella cartella dati, così il percorso da dare a Claude resta stabile
+// anche tra aggiornamenti e con l'AppImage (che a ogni avvio è montata in una cartella temporanea diversa).
+const MCP_PATH = isDev ? BUNDLED_MCP : stableMcpPath();
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -42,6 +45,17 @@ function log(...args: unknown[]) {
     fs.appendFileSync(LOG_FILE, `[${new Date().toISOString()}] ${args.map(String).join(' ')}\n`);
   } catch {
     /* ignora */
+  }
+}
+
+function stableMcpPath(): string {
+  const target = path.join(DATA_DIR, 'second-brain-mcp.mjs');
+  try {
+    fs.copyFileSync(BUNDLED_MCP, target);
+    return target;
+  } catch (e) {
+    log('Copia del server MCP non riuscita:', e);
+    return BUNDLED_MCP;
   }
 }
 
@@ -218,7 +232,7 @@ function setAutoStart(enabled: boolean) {
   if (process.platform === 'linux') {
     if (enabled) {
       fs.mkdirSync(path.dirname(linuxAutostartFile), { recursive: true });
-      const exec = [process.execPath, ...loginArgs()].map((a) => `"${a}"`).join(' ');
+      const exec = [process.env.APPIMAGE ?? process.execPath, ...loginArgs()].map((a) => `"${a}"`).join(' ');
       fs.writeFileSync(linuxAutostartFile, `[Desktop Entry]\nType=Application\nName=Second Brain\nExec=${exec}\nX-GNOME-Autostart-enabled=true\n`);
     } else fs.rmSync(linuxAutostartFile, { force: true });
     return;

@@ -78,6 +78,8 @@ La configurazione pronta da copiare è in **Impostazioni → Collega Claude (MCP
 claude mcp add second-brain --scope user -- node /percorso/assoluto/second-brain/mcp/dist/second-brain-mcp.mjs
 ```
 
+Con l'app **installata** (da `desktop:dist`) il percorso giusto è `~/SecondBrain/second-brain-mcp.mjs`: l'app ce lo copia a ogni avvio, ed è quello mostrato in Impostazioni. Serve Node.js 22.13+ nel sistema.
+
 Second Brain deve essere aperto (app desktop o `npm run dev`). Se hai impostato `APP_PASSWORD`, il server MCP la legge da `~/SecondBrain/.env`.
 
 Strumenti disponibili: `riepilogo_oggi`, `cerca`, `registra_movimento`, `riepilogo_finanze`, `aggiungi_task`, `elenca_task`, `completa_task`, `aggiungi_evento`, `agenda`, `aggiungi_promemoria`, `registra_allenamento`, `progressi_allenamento`, `registra_misure`, `registra_pasto`, `piano_alimentare`, `aggiungi_pasti_al_piano`, `mangiato_dal_piano`, `lista_spesa`, `dispensa`, `aggiungi_idee_video`, `elenca_idee_video`, `aggiorna_idea_video`, `aggiungi_nota`, `segna_abitudine`.

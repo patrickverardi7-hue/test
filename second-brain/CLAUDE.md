@@ -25,13 +25,23 @@ per inserire dati parlando.
 ## Stato e cose NON ancora verificate
 
 - Backend, frontend, MCP: testati (API via curl, UI con Playwright senza errori in console, MCP con client reale).
-- **App Electron mai avviata**: nell'ambiente cloud il binario di Electron non era scaricabile. Compila e il
-  server impacchettato (`desktop/dist/server.mjs`) gira con Node, ma finestra, tray, scorciatoia globale e
-  avvio automatico vanno provati sul PC. Punto delicato: `node:sqlite` dentro il runtime di Electron
-  (`utilityProcess.fork`). Se non disponibile, `desktop/src/main.ts` ripiega su `node` di sistema. Log: `~/SecondBrain/desktop.log`.
-- `npm run desktop:dist` (electron-builder) mai eseguito.
+- **App Electron (45.2.3) avviata e verificata su Linux** (Xvfb nel cloud, sessione 3): `node:sqlite` funziona dentro
+  `utilityProcess.fork` (il ripiego su `node` di sistema non serve), la dashboard si carica senza errori in console,
+  chiudere la finestra la nasconde, la scorciatoia globale si registra, la cattura rapida si apre, l'avvio automatico
+  scrive `~/.config/autostart/second-brain.desktop`. Prova MCP reale (spesa + idea video) con l'app aperta: ok.
+- **`npm run desktop:dist` funziona su Linux** (AppImage, provata anche impacchettata). Correzioni fatte:
+  versione di Electron fissata (`45.2.3`, electron-builder non legge i range con i workspace npm) e `build.publish: null`.
+- Da provare ancora sul PC dell'utente (Windows/macOS): icona e menu nella barra di sistema, notifiche native
+  (nel container mancava dbus), avvio all'accesso via `setLoginItemSettings`, installatori `.exe`/`.dmg`.
 - Feed RSS reali non provati (rete bloccata nel cloud); parser testato con feed locale.
 - Assistente AI provato solo senza chiave (messaggio "non configurato").
+
+### Decisioni
+
+- App installata: il server MCP viene copiato in `~/SecondBrain/second-brain-mcp.mjs` a ogni avvio, così il percorso
+  da dare a Claude resta stabile tra aggiornamenti e con l'AppImage (montata in una cartella temporanea diversa a ogni avvio).
+  In sviluppo resta `mcp/dist/second-brain-mcp.mjs`. Il server MCP gira con il `node` di sistema (≥ 22.13).
+- Avvio automatico su Linux con AppImage: usa `$APPIMAGE` invece di `process.execPath`.
 
 ## Comandi
 
@@ -48,7 +58,8 @@ Requisiti: Node.js ≥ 22.13 (per `node:sqlite`).
 
 ## Dati e configurazione
 
-- Tutto in `~/SecondBrain/`: `second-brain.db`, `.env` (vedi `server/.env.example`), `desktop.log`, `desktop-settings.json`.
+- Tutto in `~/SecondBrain/`: `second-brain.db`, `.env` (vedi `server/.env.example`), `desktop.log`, `desktop-settings.json`,
+  `second-brain-mcp.mjs` (copia del server MCP, solo con l'app installata).
 - Variabili: `PORT` (3001), `APP_PASSWORD`, `ANTHROPIC_API_KEY`, `AI_MODEL` (default `claude-opus-5-5`), `HOST` (default `127.0.0.1`), `DB_PATH`, `SECOND_BRAIN_HOME`.
 - Il server ascolta solo su 127.0.0.1 salvo `HOST=0.0.0.0` (in quel caso serve `APP_PASSWORD`).
 
