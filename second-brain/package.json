@@ -1,0 +1,22 @@
+{
+  "name": "second-brain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Seconda mente: gestione completa della vita personale (task, agenda, finanze, obiettivi, note, alimentazione, allenamenti, social, notizie, assistente AI)",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "start": "npm run start -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

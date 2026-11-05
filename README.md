@@ -96,3 +96,7 @@ npm run upgrade    # aggiorna tutti i pacchetti Remotion
 ```
 
 > Nota sulla licenza: Remotion è gratuito per privati e aziende fino a 3 persone; oltre serve una licenza aziendale. Dettagli su https://www.remotion.dev/license
+
+## Altri progetti in questo repository
+
+- [`second-brain/`](second-brain/README.md): app "seconda mente" per gestire task, agenda, finanze, obiettivi, note, alimentazione, allenamenti, social e notizie, con assistente AI.
