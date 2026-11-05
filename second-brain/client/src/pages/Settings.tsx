@@ -41,6 +41,7 @@ export default function Settings() {
     <div className="page">
       <PageHeader title="Impostazioni" />
       <div className="grid">
+        <ClaudeConnection />
         <Card title="Profilo e obiettivi" className="span-2">
           {settings && (
             <EntityForm
@@ -133,5 +134,66 @@ export default function Settings() {
         </Modal>
       )}
     </div>
+  );
+}
+
+interface Integration {
+  apiUrl: string;
+  dataDir: string;
+  dbPath: string;
+  mcpPath: string;
+  mcpBuilt: boolean;
+  passwordProtected: boolean;
+  desktop: boolean;
+}
+
+/** Istruzioni per collegare Claude Desktop / Claude Code tramite il server MCP */
+function ClaudeConnection() {
+  const { data } = useFetch<Integration>('/integration');
+  if (!data) return null;
+  const env = data.passwordProtected ? { SECOND_BRAIN_PASSWORD: 'la-tua-password' } : undefined;
+  const desktopConfig = JSON.stringify({ mcpServers: { 'second-brain': { command: 'node', args: [data.mcpPath], ...(env ? { env } : {}) } } }, null, 2);
+  const codeCmd = `claude mcp add second-brain --scope user -- node "${data.mcpPath}"`;
+  const copy = (text: string) => navigator.clipboard?.writeText(text).then(() => toast('Copiato'));
+
+  return (
+    <Card title="🤖 Collega Claude (MCP)" className="span-all">
+      <p className="small">
+        Con il server MCP puoi parlare con Second Brain da <b>Claude Desktop</b> o <b>Claude Code</b>: “ho speso 23€ al supermercato”, “aggiungi il task chiamare
+        Marco domani”, “ho fatto panca 4×8 a 75 kg”, “salva queste 5 idee video”, “come sto andando con lo squat?”. Second Brain deve essere aperto
+        (app desktop o <code>npm run dev</code>).
+      </p>
+      {!data.mcpBuilt && (
+        <p className="notice small">
+          Il server MCP non è ancora compilato: nella cartella <code>second-brain</code> esegui <code>npm run build</code>.
+        </p>
+      )}
+      <div className="grid">
+        <div>
+          <div className="subhead">Claude Desktop</div>
+          <p className="muted small">
+            Impostazioni → Sviluppatore → Modifica configurazione (file <code>claude_desktop_config.json</code>), incolla e riavvia Claude:
+          </p>
+          <pre className="code">{desktopConfig}</pre>
+          <button className="btn small" onClick={() => copy(desktopConfig)}>
+            ⧉ Copia configurazione
+          </button>
+        </div>
+        <div>
+          <div className="subhead">Claude Code</div>
+          <p className="muted small">Esegui una volta nel terminale:</p>
+          <pre className="code">{codeCmd}</pre>
+          <button className="btn small" onClick={() => copy(codeCmd)}>
+            ⧉ Copia comando
+          </button>
+          <div className="subhead">Altri strumenti</div>
+          <p className="muted small">
+            API REST: <code>{data.apiUrl}</code>
+            <br />
+            Dati: <code>{data.dbPath}</code>
+          </p>
+        </div>
+      </div>
+    </Card>
   );
 }

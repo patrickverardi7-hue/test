@@ -6,6 +6,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { db, fromRow, getSettings, HttpError, type Row } from '../db.js';
 import { RESOURCES } from '../resources.js';
 import { addDays, isDate, todayLocal } from '../dates.js';
+import { weekdayOf } from './grocery.js';
+import { workoutProgress } from './progress.js';
 import { financeSummary, habitsOverview, nutritionDay, workoutsWeek } from '../summary.js';
 
 export const aiRouter = Router();
@@ -99,9 +101,30 @@ export function buildContext(date: string, now?: string): string {
   const published = rows("SELECT * FROM social_posts WHERE status = 'pubblicato' ORDER BY publish_date DESC LIMIT 10", 'social_posts');
   parts.push(
     `## Social (nicchia: ${s.social_niche || 'non impostata'})\nIn lavorazione:\n` +
-      (social.map((p) => '- ' + line(p, ['title', 'platform', 'status', 'publish_date', 'hook'])).join('\n') || 'nessuno') +
+      (social.map((p) => '- ' + line(p, ['title', 'platform', 'format', 'status', 'publish_date', 'pillar', 'score', 'hook'])).join('\n') || 'nessuno') +
       `\nPubblicati di recente:\n` +
       (published.map((p) => '- ' + line(p, ['title', 'platform', 'publish_date', 'views', 'likes'])).join('\n') || 'nessuno'),
+  );
+
+  const wd = weekdayOf(date);
+  const plan = rows('SELECT * FROM meal_plan WHERE weekday = ? ORDER BY id', 'meal_plan', wd);
+  const lowStock = db.prepare('SELECT name, quantity, unit FROM pantry_items WHERE min_quantity IS NOT NULL AND quantity < min_quantity').all() as Row[];
+  const shopping = db.prepare('SELECT name, quantity, unit FROM shopping_items WHERE checked = 0').all() as Row[];
+  parts.push(
+    `## Piano alimentare di oggi\n` +
+      (plan.map((p) => '- ' + line(p, ['meal_type', 'title', 'calories', 'protein'])).join('\n') || 'nessun piano impostato') +
+      `\nScorte in esaurimento: ${lowStock.map((p) => `${p.name} (${p.quantity} ${p.unit})`).join(', ') || 'nessuna'}` +
+      `\nLista della spesa: ${shopping.map((p) => p.name).join(', ') || 'vuota'}`,
+  );
+
+  const progress = workoutProgress({ date, weeks: 4 });
+  parts.push(
+    `## Progressi esercizi (massimale stimato)\n` +
+      (progress.exercises
+        .slice(0, 10)
+        .map((e) => `- ${e.name}: ultimo ${e.last1rm} kg, record ${e.prWeight} kg x ${e.prReps}, variazione ${e.changePct ?? 0}% su ${e.sessionsCount} sessioni`)
+        .join('\n') || 'nessun dato') +
+      (progress.body.length ? `\nPeso corporeo: ${progress.body.slice(-5).map((b) => `${b.date} ${b.weight} kg`).join(', ')}` : ''),
   );
 
   const notes = rows('SELECT * FROM notes ORDER BY pinned DESC, updated_at DESC LIMIT 12', 'notes');

@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { useFetch, useResource } from '../api';
+import { act, api, useFetch, useResource } from '../api';
+import { Link } from '../router';
 import { Bars, Card, EntityForm, Empty, Modal, PageHeader, Progress } from '../components/ui';
 import { mealFields } from '../forms';
-import type { Meal, Settings } from '../types';
+import type { Meal, PlanMeal, Settings } from '../types';
 import { addDays, cap, fmtDate, fmtDayLabel, fmtNum, MEAL_TYPES, today } from '../utils';
 
 const MEAL_ICON: Record<string, string> = { colazione: '☕', pranzo: '🍝', spuntino: '🍎', cena: '🍽️' };
@@ -14,6 +15,7 @@ export default function Nutrition() {
   const recent = useResource<Meal>('meals', { order: '-date', limit: 300 });
   const [editing, setEditing] = useState<Partial<Meal> | null>(null);
   const [picker, setPicker] = useState(false);
+  const { data: planToday } = useFetch<{ items: PlanMeal[] }>(`/meal_plan/today?date=${date}`);
 
   const meals = week.items.filter((m) => m.date === date);
   const sum = (k: 'calories' | 'protein' | 'carbs' | 'fat', list = meals) => list.reduce((s, m) => s + (m[k] ?? 0), 0);
@@ -82,6 +84,41 @@ export default function Nutrition() {
           <p className="muted small">Media: {fmtNum(weekData.reduce((s, d) => s + d.value, 0) / 7)} kcal/giorno · linea = obiettivo</p>
         </Card>
       </div>
+
+      <Card
+        title="📅 Dal tuo piano alimentare"
+        className="plan-today"
+        action={
+          <Link to="/spesa" className="small">
+            Modifica piano →
+          </Link>
+        }
+      >
+        {!planToday?.items.length ? (
+          <p className="muted small">Nessun pasto pianificato per questo giorno. Imposta la tua settimana tipo in Spesa & dispensa → Piano alimentare.</p>
+        ) : (
+          <ul className="list compact">
+            {planToday.items.map((p) => {
+              const eaten = meals.some((m) => m.meal_type === p.meal_type && m.description === p.title);
+              return (
+                <li key={p.id} className={`row ${eaten ? 'is-done' : ''}`}>
+                  <span className="muted small meal-type">{MEAL_ICON[p.meal_type]} {cap(p.meal_type)}</span>
+                  <span className="grow">{p.title}</span>
+                  {p.calories ? <span className="muted small">{fmtNum(p.calories)} kcal</span> : null}
+                  <button
+                    className="btn small"
+                    disabled={eaten}
+                    title="Registra il pasto e scala gli ingredienti dalla dispensa"
+                    onClick={() => act(() => api.post(`/meal_plan/${p.id}/eat`, { date }), 'Pasto registrato, dispensa aggiornata')}
+                  >
+                    {eaten ? '✓ Mangiato' : 'Mangiato'}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Card>
 
       <div className="meals">
         {MEAL_TYPES.map((type) => {

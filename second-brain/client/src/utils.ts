@@ -116,3 +116,31 @@ export function parseListItems(text: string): { title: string; detail: string }[
   }
   return out;
 }
+
+export const WEEKDAYS = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+/** 1 = lunedì … 7 = domenica */
+export const isoWeekday = (date: string) => ((parseDate(date).getDay() + 6) % 7) + 1;
+
+export const UNITS = ['g', 'kg', 'ml', 'l', 'pz'];
+export function fmtQty(q: number | null | undefined, unit: string | null | undefined): string {
+  if (q === null || q === undefined) return '';
+  const u = unit ?? '';
+  const n = (x: number) => new Intl.NumberFormat('it-IT', { maximumFractionDigits: 2 }).format(x);
+  if (u === 'g' && q >= 1000) return `${n(q / 1000)} kg`;
+  if (u === 'ml' && q >= 1000) return `${n(q / 1000)} l`;
+  return `${n(q)} ${u}`.trim();
+}
+
+/** "2 kg mele", "mele 2kg", "6 uova", "latte" → { name, quantity, unit } */
+export function parseItem(text: string): { name: string; quantity: number | null; unit: string | null } {
+  const t = text.trim();
+  const unitRe = '(kg|g|gr|l|lt|ml|cl|pz|pezzi|x)?';
+  const start = t.match(new RegExp(`^(\\d+(?:[.,]\\d+)?)\\s*${unitRe}\\s+(.+)$`, 'i'));
+  const end = t.match(new RegExp(`^(.+?)\\s+(\\d+(?:[.,]\\d+)?)\\s*${unitRe}$`, 'i'));
+  const norm = (u?: string) => (!u || u.toLowerCase() === 'x' || u.toLowerCase().startsWith('pez') ? 'pz' : u.toLowerCase());
+  if (start) return { name: start[3].trim(), quantity: Number(start[1].replace(',', '.')), unit: norm(start[2]) };
+  if (end) return { name: end[1].trim(), quantity: Number(end[2].replace(',', '.')), unit: norm(end[3]) };
+  return { name: t, quantity: null, unit: null };
+}
+
+export const VIDEO_FORMATS = ['reel', 'short', 'video lungo', 'carosello', 'post', 'live', 'story'];

@@ -1,7 +1,7 @@
 // Definizioni dei form riutilizzate da pagine, dashboard e cattura rapida.
 import type { FieldSpec } from './components/ui';
 import type { Goal } from './types';
-import { AREAS, EXPENSE_CATEGORIES, INCOME_CATEGORIES, MEAL_TYPES, NOTE_TYPES, PLATFORMS, POST_STATUSES, PRIORITIES } from './utils';
+import { AREAS, EXPENSE_CATEGORIES, INCOME_CATEGORIES, MEAL_TYPES, NOTE_TYPES, PLATFORMS, POST_STATUSES, PRIORITIES, VIDEO_FORMATS } from './utils';
 
 export const taskFields = (goals: Goal[] = []): FieldSpec[] => [
   { name: 'title', label: 'Titolo', required: true, placeholder: 'Cosa devi fare?' },
@@ -79,14 +79,21 @@ export const mealFields: FieldSpec[] = [
   { name: 'fat', label: 'Grassi (g)', type: 'number', min: 0, step: 0.1, half: true },
 ];
 
-export const postFields: FieldSpec[] = [
+export const postFields = (pillars: string[] = []): FieldSpec[] => [
   { name: 'title', label: 'Titolo / idea', required: true },
   { name: 'platform', label: 'Piattaforma', type: 'select', options: PLATFORMS, required: true, half: true },
+  { name: 'format', label: 'Formato', type: 'select', options: VIDEO_FORMATS, half: true },
   { name: 'status', label: 'Stato', type: 'select', options: POST_STATUSES, required: true, half: true },
+  { name: 'score', label: 'Potenziale', type: 'select', half: true, options: [5, 4, 3, 2, 1].map((n) => ({ value: n, label: '★'.repeat(n) })) },
+  { name: 'pillar', label: 'Rubrica / tema', half: true, suggestions: pillars },
   { name: 'publish_date', label: 'Data di pubblicazione', type: 'date', half: true },
-  { name: 'hashtags', label: 'Hashtag', half: true },
-  { name: 'hook', label: 'Hook (prime parole)', type: 'textarea', rows: 2 },
+  { name: 'hook', label: 'Hook (prime parole / primi 3 secondi)', type: 'textarea', rows: 2 },
   { name: 'caption', label: 'Script / caption', type: 'textarea', rows: 6 },
+  { name: 'shot_list', label: 'Scene da girare (shot list)', type: 'textarea', rows: 3 },
+  { name: 'thumbnail_idea', label: 'Idea per copertina / thumbnail', half: true },
+  { name: 'duration_sec', label: 'Durata (secondi)', type: 'number', min: 0, half: true },
+  { name: 'hashtags', label: 'Hashtag', half: true },
+  { name: 'inspiration', label: 'Link di ispirazione', half: true },
   { name: 'notes', label: 'Note', type: 'textarea', rows: 2 },
   { name: 'views', label: 'Visualizzazioni', type: 'number', min: 0, half: true },
   { name: 'likes', label: 'Like', type: 'number', min: 0, half: true },

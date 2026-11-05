@@ -1479,3 +1479,146 @@ input[type='color'] {
     grid-template-columns: minmax(0, 1fr) 52px 52px 62px 30px;
   }
 }
+
+/* ---------- grafico a linee ---------- */
+.linechart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.lc-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.lc-tick {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.lc-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.lc-line2 {
+  stroke: var(--green);
+  stroke-dasharray: 5 4;
+}
+.lc-dot {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+/* ---------- v2: spesa, progressi, idee video, integrazioni ---------- */
+.grocery-actions {
+  margin-bottom: 1rem;
+}
+.grocery-actions p {
+  margin: 0.5rem 0 0;
+}
+.grocery-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.cart {
+  opacity: 0.9;
+}
+.row.is-empty .link {
+  color: var(--muted);
+}
+.qty {
+  min-width: 4.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.plan-week {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+.card.is-today {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.meal-type {
+  min-width: 4.6rem;
+}
+.plan-today {
+  margin-top: 1rem;
+}
+.ingredient-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px 70px 30px;
+  gap: 0.4rem;
+  width: 100%;
+  align-items: center;
+}
+.stats-row.compact {
+  margin: 0.25rem 0 0.75rem;
+}
+.stats-row.compact .stat {
+  box-shadow: none;
+  background: var(--surface-2);
+  border: none;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-top: 0.75rem;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.stars {
+  display: flex;
+  flex-shrink: 0;
+}
+.star {
+  border: none;
+  background: none;
+  padding: 0 1px;
+  font-size: 1rem;
+  color: var(--border);
+  cursor: pointer;
+}
+.star.on {
+  color: var(--orange);
+}
+.status-select {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.82rem;
+}
+.idea-bank .row {
+  flex-wrap: wrap;
+}
+pre.code {
+  background: var(--surface-2);
+  border-radius: 9px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0.4rem 0 0.6rem;
+}
+@media (max-width: 860px) {
+  .ingredient-row {
+    grid-template-columns: minmax(0, 1fr) 64px 60px 30px;
+  }
+  .table {
+    font-size: 0.8rem;
+  }
+}

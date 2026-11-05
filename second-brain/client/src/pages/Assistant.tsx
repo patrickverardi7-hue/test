@@ -72,6 +72,14 @@ export default function Assistant() {
     act(() => api.post('/notes', { title: question.slice(0, 70), content, type: 'nota', tags: 'assistente' }), 'Salvata nelle note');
   };
 
+  const saveAsVideoIdeas = (content: string) => {
+    const items = parseListItems(content).slice(0, 20);
+    if (!items.length) return;
+    act(async () => {
+      for (const it of items) await api.post('/social_posts', { title: it.title.slice(0, 140), hook: it.detail || null, status: 'idea', format: 'reel', source: 'AI' });
+    }, `${items.length} idee video salvate nella banca idee 🎬`);
+  };
+
   const saveAsTasks = (content: string) => {
     const items = parseListItems(content).slice(0, 15);
     if (!items.length) return;
@@ -121,9 +129,14 @@ export default function Assistant() {
                   📝 Salva come nota
                 </button>
                 {parseListItems(m.content).length > 0 && (
-                  <button className="btn small ghost" onClick={() => saveAsTasks(m.content)}>
-                    ☑ Trasforma l'elenco in task
-                  </button>
+                  <>
+                    <button className="btn small ghost" onClick={() => saveAsTasks(m.content)}>
+                      ☑ Trasforma l'elenco in task
+                    </button>
+                    <button className="btn small ghost" onClick={() => saveAsVideoIdeas(m.content)}>
+                      🎬 Salva come idee video
+                    </button>
+                  </>
                 )}
                 <button className="btn small ghost" onClick={() => navigator.clipboard?.writeText(m.content)}>
                   ⧉ Copia

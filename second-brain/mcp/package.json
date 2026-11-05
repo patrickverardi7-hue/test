@@ -1,0 +1,23 @@
+{
+  "name": "second-brain-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Server MCP per far comunicare Claude (Desktop/Code) con Second Brain",
+  "bin": { "second-brain-mcp": "dist/second-brain-mcp.mjs" },
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "@types/node": "^22.0.0"
+  }
+}

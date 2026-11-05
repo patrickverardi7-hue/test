@@ -5,13 +5,19 @@
   "description": "Seconda mente: gestione completa della vita personale (task, agenda, finanze, obiettivi, note, alimentazione, allenamenti, social, notizie, assistente AI)",
   "workspaces": [
     "server",
-    "client"
+    "client",
+    "mcp",
+    "desktop"
   ],
   "scripts": {
     "dev": "concurrently -k -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
-    "build": "npm run build -w client",
+    "build": "npm run build -w client && npm run build -w mcp",
     "start": "npm run start -w server",
-    "typecheck": "npm run typecheck -w server && npm run typecheck -w client"
+    "desktop": "npm run build -w client && npm run start -w desktop",
+    "desktop:dist": "npm run build -w client && npm run dist -w desktop",
+    "mcp": "node mcp/dist/second-brain-mcp.mjs",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client && npm run typecheck -w mcp && npm run typecheck -w desktop",
+    "postinstall": "npm run build -w mcp"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"

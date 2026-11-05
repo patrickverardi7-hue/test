@@ -361,3 +361,72 @@ export function Markdown({ text, onWikiLink }: { text: string; onWikiLink?: (tit
   flush();
   return <div className="markdown">{blocks}</div>;
 }
+
+// ---------- grafico a linee (SVG) ----------
+export function LineChart({
+  points,
+  series2,
+  format = (n) => String(Math.round(n * 10) / 10),
+  height = 180,
+  labels = ['', ''],
+}: {
+  points: { x: string; y: number | null }[];
+  series2?: { x: string; y: number | null }[];
+  format?: (n: number) => string;
+  height?: number;
+  labels?: [string, string];
+}) {
+  const W = 600;
+  const H = height;
+  const pad = { l: 44, r: 12, t: 12, b: 24 };
+  const all = [...points, ...(series2 ?? [])].map((p) => p.y).filter((y): y is number => y !== null);
+  if (points.filter((p) => p.y !== null).length === 0) return <Empty>Ancora nessun dato da mostrare.</Empty>;
+  let min = Math.min(...all);
+  let max = Math.max(...all);
+  if (min === max) {
+    min -= 1;
+    max += 1;
+  }
+  const span = max - min;
+  min -= span * 0.1;
+  max += span * 0.1;
+  const n = Math.max(points.length, series2?.length ?? 0);
+  const xOf = (i: number) => pad.l + (n <= 1 ? (W - pad.l - pad.r) / 2 : (i / (n - 1)) * (W - pad.l - pad.r));
+  const yOf = (v: number) => pad.t + (1 - (v - min) / (max - min)) * (H - pad.t - pad.b);
+  const path = (pts: { y: number | null }[]) =>
+    pts
+      .map((p, i) => (p.y === null ? null : `${xOf(i)},${yOf(p.y)}`))
+      .filter(Boolean)
+      .map((c, i) => `${i ? 'L' : 'M'}${c}`)
+      .join(' ');
+  const ticks = [max - span * 0.1, (max + min) / 2, min + span * 0.1];
+  return (
+    <div className="linechart">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Grafico andamento">
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1={pad.l} x2={W - pad.r} y1={yOf(t)} y2={yOf(t)} className="lc-grid" />
+            <text x={pad.l - 6} y={yOf(t) + 4} className="lc-tick" textAnchor="end">
+              {format(t)}
+            </text>
+          </g>
+        ))}
+        {series2 && <path d={path(series2)} className="lc-line lc-line2" />}
+        <path d={path(points)} className="lc-line" />
+        {points.map((p, i) =>
+          p.y === null ? null : (
+            <circle key={i} cx={xOf(i)} cy={yOf(p.y)} r={3.5} className="lc-dot">
+              <title>{`${p.x}: ${format(p.y)}`}</title>
+            </circle>
+          ),
+        )}
+        <text x={pad.l} y={H - 6} className="lc-tick">
+          {labels[0] || points[0]?.x}
+        </text>
+        <text x={W - pad.r} y={H - 6} className="lc-tick" textAnchor="end">
+          {labels[1] || points[points.length - 1]?.x}
+        </text>
+      </svg>
+    </div>
+  );
+}

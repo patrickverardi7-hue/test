@@ -3,7 +3,7 @@ import { act, api, getToken, onUnauthorized, setToken, toast, useFetch, useToast
 import { Modal } from './components/ui';
 import { navigate, useRoute } from './router';
 import type { Reminder, Settings as SettingsT } from './types';
-import { addDays, nowLocal, setCurrency, today } from './utils';
+import { addDays, nowLocal, parseItem, setCurrency, today } from './utils';
 import Dashboard from './pages/Dashboard';
 import Tasks from './pages/Tasks';
 import Agenda from './pages/Agenda';
@@ -18,6 +18,7 @@ import News from './pages/News';
 import Assistant from './pages/Assistant';
 import Settings from './pages/Settings';
 import Search from './pages/Search';
+import Grocery from './pages/Grocery';
 
 const NAV = [
   { path: '/', label: 'Oggi', icon: '🏠', page: Dashboard },
@@ -28,8 +29,9 @@ const NAV = [
   { path: '/note', label: 'Note & idee', icon: '💡', page: Notes },
   { path: '/finanze', label: 'Finanze', icon: '💶', page: Finance },
   { path: '/alimentazione', label: 'Alimentazione', icon: '🥗', page: Nutrition },
+  { path: '/spesa', label: 'Spesa & dispensa', icon: '🛒', page: Grocery },
   { path: '/allenamenti', label: 'Allenamenti', icon: '🏋️', page: Workouts },
-  { path: '/social', label: 'Social', icon: '📱', page: Social },
+  { path: '/social', label: 'Social & idee video', icon: '🎬', page: Social },
   { path: '/notizie', label: 'Notizie', icon: '📰', page: News },
   { path: '/assistente', label: 'Assistente AI', icon: '✨', page: Assistant },
   { path: '/impostazioni', label: 'Impostazioni', icon: '⚙️', page: Settings },
@@ -94,6 +96,14 @@ function Shell() {
   }, [settings]);
 
   useEffect(() => setMenuOpen(false), [path]);
+
+  // #/?capture=1 apre la cattura rapida (usato dalla scorciatoia globale dell'app desktop)
+  const captureParam = params.get('capture');
+  useEffect(() => {
+    if (!captureParam) return;
+    setCapture(true);
+    navigate(path);
+  }, [captureParam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // scorciatoie: "/" cerca, "Alt+N" cattura rapida
   useEffect(() => {
@@ -170,7 +180,19 @@ function Shell() {
   );
 }
 
-type CaptureType = 'inbox' | 'task' | 'idea' | 'reminder' | 'expense' | 'event';
+type CaptureType = 'inbox' | 'task' | 'idea' | 'video' | 'reminder' | 'expense' | 'event' | 'workout' | 'shopping';
+
+const PLACEHOLDER: Record<CaptureType, string> = {
+  inbox: 'Cosa ti passa per la testa?',
+  task: 'Cosa devi fare?',
+  idea: "Descrivi l'idea…",
+  video: 'Titolo del video — hook (es. "3 errori in palestra — Il secondo lo fanno tutti")',
+  reminder: 'Di cosa vuoi ricordarti?',
+  event: 'Appuntamento o impegno',
+  expense: 'Descrizione della spesa',
+  workout: 'Es. Push, Corsa 5 km (aggiungi gli esercizi dalla pagina Allenamenti)',
+  shopping: 'Es. 2 kg mele, latte, 6 uova',
+};
 
 function QuickCapture({ onClose }: { onClose: () => void }) {
   const [type, setType] = useState<CaptureType>('inbox');
@@ -184,9 +206,12 @@ function QuickCapture({ onClose }: { onClose: () => void }) {
     { value: 'inbox', label: '📥 Inbox' },
     { value: 'task', label: '☑️ Task' },
     { value: 'idea', label: '💡 Idea' },
+    { value: 'video', label: '🎬 Idea video' },
     { value: 'reminder', label: '🔔 Promemoria' },
     { value: 'event', label: '🗓️ Evento' },
-    { value: 'expense', label: '💶 Spesa' },
+    { value: 'expense', label: '💶 Uscita' },
+    { value: 'workout', label: '🏋️ Allenamento' },
+    { value: 'shopping', label: '🛒 Lista spesa' },
   ];
 
   const submit = async (e: FormEvent) => {
@@ -200,12 +225,21 @@ function QuickCapture({ onClose }: { onClose: () => void }) {
       reminder: () => api.post('/reminders', { title: t, remind_at: `${date}T${time || '09:00'}`, repeat: 'none' }),
       event: () => api.post('/events', { title: t, date, start_time: time || null }),
       expense: () => api.post('/transactions', { type: 'expense', amount: Number(amount), description: t, category, date }),
+      video: () => {
+        const [title, ...hook] = t.split(/\s+[—–-]\s+|\n/);
+        return api.post('/social_posts', { title: title.slice(0, 140), hook: hook.join(' ').trim() || null, status: 'idea', format: 'reel', source: 'cattura' });
+      },
+      workout: () => api.post('/workouts', { title: t, date, duration_min: amount ? Number(amount) : null, type: 'forza', exercises: [] }),
+      shopping: async () => {
+        await api.post('/shopping/add', { items: t.split(/[,;\n]/).map((x) => x.trim()).filter(Boolean).map(parseItem) });
+        return true;
+      },
     };
     const r = await act(ops[type], 'Catturato ✓');
     if (r !== undefined) onClose();
   };
 
-  const needsDate = type === 'task' || type === 'reminder' || type === 'event' || type === 'expense';
+  const needsDate = type === 'task' || type === 'reminder' || type === 'event' || type === 'expense' || type === 'workout';
   const needsTime = type === 'reminder' || type === 'event';
 
   return (
@@ -223,7 +257,7 @@ function QuickCapture({ onClose }: { onClose: () => void }) {
           rows={3}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={type === 'expense' ? 'Descrizione della spesa' : 'Cosa ti passa per la testa?'}
+          placeholder={PLACEHOLDER[type]}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit(e);
           }}
@@ -247,6 +281,12 @@ function QuickCapture({ onClose }: { onClose: () => void }) {
               <div className="field half">
                 <label htmlFor="cap-time">Ora</label>
                 <input id="cap-time" type="time" value={time} onChange={(e) => setTime(e.target.value)} required={type === 'reminder'} />
+              </div>
+            )}
+            {type === 'workout' && (
+              <div className="field half">
+                <label htmlFor="cap-dur">Durata (min)</label>
+                <input id="cap-dur" type="number" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} />
               </div>
             )}
             {type === 'expense' && (

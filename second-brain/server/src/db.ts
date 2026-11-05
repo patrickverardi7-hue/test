@@ -3,8 +3,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { DEFAULT_FEEDS, DEFAULT_SETTINGS, RESOURCES, type FieldType, type ResourceDef } from './resources.js';
 
-const DB_PATH = path.resolve(process.env.DB_PATH ?? path.join(process.cwd(), 'data', 'second-brain.db'));
+import { DATA_DIR } from './env.js';
+
+export const DB_PATH = path.resolve(process.env.DB_PATH ?? path.join(DATA_DIR, 'second-brain.db'));
 fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
+// Compatibilità con la prima versione, che salvava i dati in server/data/
+const LEGACY_DB = path.join(process.cwd(), 'data', 'second-brain.db');
+if (!process.env.DB_PATH && !fs.existsSync(DB_PATH) && fs.existsSync(LEGACY_DB)) {
+  fs.copyFileSync(LEGACY_DB, DB_PATH);
+  console.log(`Database spostato da ${LEGACY_DB} a ${DB_PATH}`);
+}
 
 export const db = new DatabaseSync(DB_PATH);
 db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');

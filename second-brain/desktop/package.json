@@ -1,0 +1,66 @@
+{
+  "name": "second-brain-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Second Brain - app desktop",
+  "author": "Second Brain",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "node build.mjs && electron .",
+    "dist": "node build.mjs && electron-builder",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "@types/node": "^22.0.0"
+  },
+  "build": {
+    "appId": "com.secondbrain.desktop",
+    "productName": "Second Brain",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "assets/**",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "dist/*.mjs"
+    ],
+    "extraResources": [
+      {
+        "from": "../client/dist",
+        "to": "client"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.png",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

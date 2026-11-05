@@ -1,3 +1,5 @@
+import { normalizeRecord } from './units.js';
+
 // Definizione di tutte le "collezioni" dell'app.
 // Ogni risorsa diventa una tabella SQLite e ottiene automaticamente
 // le API REST: GET/POST /api/<nome>, GET/PATCH/DELETE /api/<nome>/:id
@@ -219,12 +221,86 @@ export const RESOURCES: Record<string, ResourceDef> = {
       notes: 'text',
       views: 'int',
       likes: 'int',
+      format: 'text', // reel | short | video lungo | carosello | post | live
+      pillar: 'text', // tema / rubrica
+      score: 'int', // potenziale 1-5
+      duration_sec: 'int',
+      shot_list: 'text',
+      thumbnail_idea: 'text',
+      inspiration: 'text', // link e riferimenti di ispirazione
+      source: 'text', // da dove arriva l'idea (app, AI, MCP, import…)
     },
     required: ['title'],
-    defaults: { platform: 'instagram', status: 'idea' },
+    defaults: { platform: 'instagram', status: 'idea', format: 'reel' },
     dateField: 'publish_date',
-    searchFields: ['title', 'hook', 'caption', 'notes'],
-    defaultOrder: 'publish_date IS NULL, publish_date, id DESC',
+    searchFields: ['title', 'hook', 'caption', 'notes', 'pillar', 'shot_list'],
+    defaultOrder: 'publish_date IS NULL, publish_date, score DESC, id DESC',
+  },
+
+  body_metrics: {
+    table: 'body_metrics',
+    fields: { date: 'text', weight: 'real', body_fat: 'real', waist: 'real', notes: 'text' },
+    required: ['date'],
+    dateField: 'date',
+    defaultOrder: 'date DESC',
+    indexes: ['date'],
+  },
+
+  // ---------- spesa ----------
+  pantry_items: {
+    table: 'pantry_items',
+    fields: {
+      name: 'text',
+      quantity: 'real',
+      unit: 'text', // g | ml | pz
+      category: 'text',
+      min_quantity: 'real', // sotto questa soglia finisce nella lista della spesa
+      expires_on: 'text',
+      notes: 'text',
+    },
+    required: ['name'],
+    defaults: { quantity: 0, unit: 'pz' },
+    dateField: 'expires_on',
+    searchFields: ['name', 'category'],
+    beforeSave: normalizeRecord,
+    defaultOrder: 'category, name COLLATE NOCASE',
+  },
+
+  meal_plan: {
+    table: 'meal_plan',
+    fields: {
+      weekday: 'int', // 1 = lunedì … 7 = domenica
+      meal_type: 'text',
+      title: 'text',
+      ingredients: 'json', // [{ name, quantity, unit }]
+      calories: 'real',
+      protein: 'real',
+      carbs: 'real',
+      fat: 'real',
+      notes: 'text',
+    },
+    required: ['weekday', 'title'],
+    defaults: { meal_type: 'pranzo', ingredients: [] },
+    searchFields: ['title', 'notes'],
+    defaultOrder: "weekday, CASE meal_type WHEN 'colazione' THEN 0 WHEN 'pranzo' THEN 1 WHEN 'spuntino' THEN 2 ELSE 3 END, id",
+  },
+
+  shopping_items: {
+    table: 'shopping_items',
+    fields: {
+      name: 'text',
+      quantity: 'real',
+      unit: 'text',
+      category: 'text',
+      checked: 'bool',
+      source: 'text', // manuale | piano | scorta
+      notes: 'text',
+    },
+    required: ['name'],
+    defaults: { checked: false, source: 'manuale' },
+    searchFields: ['name'],
+    beforeSave: normalizeRecord,
+    defaultOrder: 'checked, category, name COLLATE NOCASE',
   },
 
   feeds: {

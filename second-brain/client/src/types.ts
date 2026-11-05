@@ -113,6 +113,14 @@ export interface SocialPost extends Base {
   notes: string | null;
   views: number | null;
   likes: number | null;
+  format: string | null;
+  pillar: string | null;
+  score: number | null;
+  duration_sec: number | null;
+  shot_list: string | null;
+  thumbnail_idea: string | null;
+  inspiration: string | null;
+  source: string | null;
 }
 export interface Feed extends Base {
   name: string;
@@ -171,4 +179,64 @@ export function goalProgress(g: Goal): number {
   if (ms.length) return Math.round((ms.filter((m) => m.done).length / ms.length) * 100);
   if (g.metric_target) return Math.min(100, Math.round(((g.metric_current ?? 0) / g.metric_target) * 100));
   return g.progress ?? 0;
+}
+
+export interface BodyMetric extends Base {
+  date: string;
+  weight: number | null;
+  body_fat: number | null;
+  waist: number | null;
+  notes: string | null;
+}
+export interface Ingredient {
+  name: string;
+  quantity: number | null;
+  unit: string | null;
+}
+export interface PlanMeal extends Base {
+  weekday: number;
+  meal_type: string;
+  title: string;
+  ingredients: Ingredient[] | null;
+  calories: number | null;
+  protein: number | null;
+  carbs: number | null;
+  fat: number | null;
+  notes: string | null;
+}
+export interface PantryItem extends Base {
+  name: string;
+  quantity: number;
+  unit: string;
+  category: string | null;
+  min_quantity: number | null;
+  expires_on: string | null;
+  notes: string | null;
+}
+export interface ShoppingItem extends Base {
+  name: string;
+  quantity: number | null;
+  unit: string | null;
+  category: string | null;
+  checked: boolean;
+  source: 'manuale' | 'piano' | 'scorta';
+  notes: string | null;
+}
+export interface ExerciseProgress {
+  name: string;
+  sessionsCount: number;
+  lastDate: string;
+  prWeight: number;
+  prReps: number;
+  prDate: string;
+  best1rm: number;
+  first1rm: number;
+  last1rm: number;
+  changePct: number | null;
+  history: { date: string; weight: number; reps: number; sets: number; e1rm: number; volume: number }[];
+}
+export interface WorkoutProgress {
+  exercises: ExerciseProgress[];
+  weekly: { week: string; sessions: number; minutes: number; volume: number }[];
+  body: { date: string; weight: number | null; body_fat: number | null; waist: number | null }[];
 }
